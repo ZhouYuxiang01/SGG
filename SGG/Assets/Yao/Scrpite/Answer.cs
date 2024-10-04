@@ -25,6 +25,7 @@ public class Answer : MonoBehaviour
     public TextMeshProUGUI TM_Text;//当前题目
     public List<TextMeshProUGUI> DA_TextList;//选项
     private int topicIndex = 0;//第几题
+    private string currentQuizFileName;
 
     //按钮功能及提示信息
     public Button BtnBack;//上一题
@@ -55,27 +56,33 @@ public class Answer : MonoBehaviour
         BtnNext.onClick.AddListener(() => Select_Answer(2));
     }
 
+    public void LoadQuizFromFile(string fileName)
+    {
+        currentQuizFileName = fileName;
+        TextCsv();
+        ResetQuiz();
+        LoadAnswer();
+    }
+
     /*****************读取txt数据******************/
     void TextCsv()
     {
-        //读取csv二进制文件  
-        TextAsset binAsset = Resources.Load("YW", typeof(TextAsset)) as TextAsset;
-        //读取每一行的内容  
+        TextAsset binAsset = Resources.Load(currentQuizFileName, typeof(TextAsset)) as TextAsset;
+        if (binAsset == null)
+        {
+            Debug.LogError($"Quiz file {currentQuizFileName} not found!");
+            return;
+        }
+
         lineArray = binAsset.text.Split('\r');
-        //创建二维数组  
         ArrayX = new string[lineArray.Length][];
-        //把csv中的数据储存在二维数组中  
         for (int i = 0; i < lineArray.Length; i++)
         {
             ArrayX[i] = lineArray[i].Split(':');
         }
-        //设置题目状态
         topicMax = lineArray.Length;
-        for (int x = 0; x < topicMax + 1; x++)
-        {
-            isAnserList.Add(false);
-        }
     }
+
 
     /*****************加载题目******************/
     void LoadAnswer()
@@ -99,6 +106,19 @@ public class Answer : MonoBehaviour
         {
             DA_TextList[x].text = ArrayX[topicIndex][x + 2];//选项
         }
+    }
+
+    void ResetQuiz()
+    {
+        topicIndex = 0;
+        anserint = 0;
+        isRightNum = 0;
+        isAnserList.Clear();
+        for (int x = 0; x < topicMax; x++)
+        {
+            isAnserList.Add(false);
+        }
+        TextAccuracy.text = "Accuracy 0%";
     }
 
     /*****************按钮功能******************/
