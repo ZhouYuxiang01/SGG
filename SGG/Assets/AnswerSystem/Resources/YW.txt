@@ -1,0 +1,3 @@
+﻿1:Which of the following is not a type of banana?:A, Cavendish:B, Plantain:C, Honeycrisp:D, Red Banana :3
+2:Bananas are high in which mineral? :A, Calcium :B, Potassium :C, Iron :D, Magnesium :2
+3:What is the primary color of a ripe banana? :A, Green:B, Yellow :C, Red :D, Purple:2
