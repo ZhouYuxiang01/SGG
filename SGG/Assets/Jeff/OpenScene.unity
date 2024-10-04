@@ -1190,7 +1190,7 @@ PrefabInstance:
       objectReference: {fileID: 21300000, guid: 6c015a111976da14580d6f47a53101f4, type: 3}
     - target: {fileID: 3236124147357867529, guid: 2fe74de0e809d4449a5ac24dda3ac09c, type: 3}
       propertyPath: m_text
-      value: Level
+      value: Level 1
       objectReference: {fileID: 0}
     - target: {fileID: 3236124147357867529, guid: 2fe74de0e809d4449a5ac24dda3ac09c, type: 3}
       propertyPath: m_TextStyleHashCode
