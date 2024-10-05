@@ -4,6 +4,7 @@ using System.Collections.Generic;
 public class QuizManager : MonoBehaviour
 {
     public static QuizManager Instance { get; private set; }
+    private PlantDictionary plantDictionary;
 
     [System.Serializable]
     public class PlantQuiz
@@ -30,6 +31,12 @@ public class QuizManager : MonoBehaviour
 
     private void Start()
     {
+        plantDictionary = FindObjectOfType<PlantDictionary>();
+        if (plantDictionary == null)
+        {
+            Debug.LogError("PlantDictionary not found in the scene!");
+        }
+
         string selectedPlant = PlayerPrefs.GetString("SelectedPlant", "");
         if (!string.IsNullOrEmpty(selectedPlant))
         {
@@ -53,7 +60,7 @@ public class QuizManager : MonoBehaviour
         PlantQuiz quiz = plantQuizzes.Find(q => q.plantName == plantName);
         if (quiz != null && quiz.quizTextAsset != null)
         {
-            answerScript.InitializeQuiz(quiz.quizTextAsset.text);
+            answerScript.InitializeQuiz(plantName, quiz.quizTextAsset.text);
         }
         else
         {
@@ -65,5 +72,19 @@ public class QuizManager : MonoBehaviour
     {
         PlantQuiz quiz = plantQuizzes.Find(q => q.plantName == plantName);
         return quiz?.quizTextAsset;
+    }
+
+    public void OnQuizComplete(string plantName, float correctRate)
+    {
+        if (plantDictionary != null)
+        {
+            plantDictionary.UnlockPlant(plantName, correctRate);
+        }
+        else
+        {
+            Debug.LogError("PlantDictionary is not set!");
+        }
+
+        Debug.Log($"Quiz completed for {plantName} with correct rate: {correctRate:P2}");
     }
 }

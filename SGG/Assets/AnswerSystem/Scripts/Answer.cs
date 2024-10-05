@@ -23,6 +23,8 @@ public class Answer : MonoBehaviour
     public Button BtnBack;
     public Button BtnNext;
     public Button BtnTip;
+    private QuizManager quizManager;
+    private string currentPlantName;
 
     // 统计信息
     public TextMeshProUGUI TextAccuracy;
@@ -33,6 +35,11 @@ public class Answer : MonoBehaviour
     private void Start()
     {
         SetupListeners();
+        quizManager = FindObjectOfType<QuizManager>();
+        if (quizManager == null)
+        {
+            Debug.LogError("QuizManager not found in the scene!");
+        }
     }
 
     private void SetupListeners()
@@ -48,8 +55,15 @@ public class Answer : MonoBehaviour
         BtnNext.onClick.AddListener(() => Select_Answer(2));
     }
 
-    public void InitializeQuiz(string quizText)
+    public void InitializeQuiz(string plantName, string quizText)
     {
+        if (string.IsNullOrEmpty(plantName) || string.IsNullOrEmpty(quizText))
+        {
+            Debug.LogError("Plant name or quiz text is null or empty!");
+            return;
+        }
+
+        currentPlantName = plantName;
         ParseQuizText(quizText);
         ResetQuiz();
         LoadAnswer();
@@ -170,6 +184,22 @@ public class Answer : MonoBehaviour
         }
     }
 
+    private void CheckQuizCompletion()
+    {
+        if (anserint == topicMax)
+        {
+            float correctRate = (float)isRightNum / topicMax;
+            if (quizManager != null)
+            {
+                quizManager.OnQuizComplete(currentPlantName, correctRate);
+            }
+            else
+            {
+                Debug.LogError("QuizManager is null, can't report quiz completion!");
+            }
+        }
+    }
+
     private void AnswerRightWrongJudgment(bool isOn, int index)
     {
         if (!isOn) return;
@@ -180,6 +210,8 @@ public class Answer : MonoBehaviour
         UpdateTipsForAnswer(isCorrect);
         UpdateAccuracy(isCorrect);
         DisableToggles();
+
+        CheckQuizCompletion();
     }
 
     private void UpdateTipsForAnswer(bool isCorrect)
