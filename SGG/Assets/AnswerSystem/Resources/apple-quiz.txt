@@ -1,0 +1,5 @@
+1:Which of the following is not a variety of apple?:A, Granny Smith:B, Red Delicious:C, Honeycrisp:D, Valencia:4
+2:What vitamin are apples particularly rich in?:A, Vitamin A:B, Vitamin B:C, Vitamin C:D, Vitamin D:3
+3:What is the edible part of an apple botanically classified as?:A, Berry:B, Drupe:C, Pome:D, Aggregate fruit:3
+4:Which country is the world's largest producer of apples?:A, United States:B, China:C, Italy:D, France:2
+5:What compound gives apples their waxy coating?:A, Cellulose:B, Pectin:C, Cutin:D, Lignin:3
