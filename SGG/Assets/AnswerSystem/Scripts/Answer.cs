@@ -1,231 +1,280 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro; // 添加 TextMeshPro 命名空间
-using System;
-
-public interface IQuizCompleteHandler
-{
-    void OnQuizComplete(int totalQuestions, int correctAnswers);
-}
+using TMPro;
 
 public class Answer : MonoBehaviour
 {
-    //读取文档
-    string[][] ArrayX;//题目数据
-    string[] lineArray;//读取到题目数据
-    private int topicMax = 0;//最大题数
-    private List<bool> isAnserList = new List<bool>();//存放是否答过题的状态
+    // 题目数据
+    private string[][] ArrayX;
+    private string[] lineArray;
+    private int topicMax = 0;
+    private List<bool> isAnserList = new List<bool>();
 
-    //加载题目
-    public GameObject tipsbtn;//提示按钮
-    public TextMeshProUGUI tipsText;//提示信息
-    public List<Toggle> toggleList;//答题Toggle
-    public TextMeshProUGUI indexText;//当前第几题
-    public TextMeshProUGUI TM_Text;//当前题目
-    public List<TextMeshProUGUI> DA_TextList;//选项
-    private int topicIndex = 0;//第几题
+    // UI 元素
+    public GameObject tipsbtn;
+    public TextMeshProUGUI tipsText;
+    public List<Toggle> toggleList;
+    public TextMeshProUGUI indexText;
+    public TextMeshProUGUI TM_Text;
+    public List<TextMeshProUGUI> DA_TextList;
 
-    //按钮功能及提示信息
-    public Button BtnBack;//上一题
-    public Button BtnNext;//下一题
-    public Button BtnTip;//消息提醒
-    public TextMeshProUGUI TextAccuracy;//正确率
-    private int anserint = 0;//已经答过几题
-    private int isRightNum = 0;//正确题数
+    // 按钮
+    public Button BtnBack;
+    public Button BtnNext;
+    public Button BtnTip;
 
-    // 新增接口引用
-    public IQuizCompleteHandler quizCompleteHandler;
+    // 统计信息
+    public TextMeshProUGUI TextAccuracy;
+    private int topicIndex = 0;
+    private int anserint = 0;
+    private int isRightNum = 0;
+    private float displayedAccuracy = 0f;
 
-    void Awake()
-    {
-        TextCsv();
-        LoadAnswer();
-    }
+    private QuizManager quizManager;
+    private string currentPlantName;
+    private const float PASS_THRESHOLD = 0.6f; // 60% 通过阈值
 
     void Start()
     {
-        toggleList[0].onValueChanged.AddListener((isOn) => AnswerRightWrongJudgment(isOn,0));
-        toggleList[1].onValueChanged.AddListener((isOn) => AnswerRightWrongJudgment(isOn,1));
-        toggleList[2].onValueChanged.AddListener((isOn) => AnswerRightWrongJudgment(isOn,2));
-        toggleList[3].onValueChanged.AddListener((isOn) => AnswerRightWrongJudgment(isOn,3));
+        SetupListeners();
+        quizManager = FindObjectOfType<QuizManager>();
+        if (quizManager == null)
+        {
+            Debug.LogError("QuizManager not found in the scene!");
+        }
+    }
+
+    private void SetupListeners()
+    {
+        for (int i = 0; i < toggleList.Count; i++)
+        {
+            int index = i;
+            toggleList[i].onValueChanged.AddListener((isOn) => AnswerRightWrongJudgment(isOn, index));
+        }
 
         BtnTip.onClick.AddListener(() => Select_Answer(0));
         BtnBack.onClick.AddListener(() => Select_Answer(1));
         BtnNext.onClick.AddListener(() => Select_Answer(2));
     }
 
-    /*****************读取txt数据******************/
-    void TextCsv()
+    public void InitializeQuiz(string plantName, string quizText)
     {
-        //读取csv二进制文件  
-        TextAsset binAsset = Resources.Load("YW", typeof(TextAsset)) as TextAsset;
-        //读取每一行的内容  
-        lineArray = binAsset.text.Split('\r');
-        //创建二维数组  
+        currentPlantName = plantName;
+        ParseQuizText(quizText);
+        ResetQuiz();
+        LoadAnswer();
+    }
+
+    private void ParseQuizText(string quizText)
+    {
+        lineArray = quizText.Split('\n');
         ArrayX = new string[lineArray.Length][];
-        //把csv中的数据储存在二维数组中  
         for (int i = 0; i < lineArray.Length; i++)
         {
             ArrayX[i] = lineArray[i].Split(':');
         }
-        //设置题目状态
         topicMax = lineArray.Length;
-        for (int x = 0; x < topicMax + 1; x++)
+        isAnserList.Clear();
+        for (int x = 0; x < topicMax; x++)
         {
             isAnserList.Add(false);
         }
     }
 
-    /*****************加载题目******************/
-    void LoadAnswer()
+    private void ResetQuiz()
     {
-        for (int i = 0; i < toggleList.Count; i++)
-        {
-            toggleList[i].isOn = false;
-        }
-        for (int i = 0; i < toggleList.Count; i++)
-        {
-            toggleList[i].interactable = true;
-        }
-        
-        tipsbtn.SetActive(false);
-        tipsText.text = "";
+        topicIndex = 0;
+        anserint = 0;
+        isRightNum = 0;
+        TextAccuracy.text = "Accuracy 0%";
+    }
 
-        indexText.text = "Question " + (topicIndex + 1);//第几题
-        TM_Text.text = ArrayX[topicIndex][1];//题目
-        int idx = ArrayX[topicIndex].Length - 3;//有几个选项
-        for (int x = 0; x < idx; x++)
+    private void LoadAnswer()
+    {
+        if (topicIndex >= topicMax)
         {
-            DA_TextList[x].text = ArrayX[topicIndex][x + 2];//选项
+            OnQuizComplete();
+            return;
+        }
+
+        ResetToggles();
+        ResetTips();
+        UpdateQuestionDisplay();
+    }
+
+    private void ResetToggles()
+    {
+        foreach (var toggle in toggleList)
+        {
+            toggle.isOn = false;
+            toggle.interactable = true;
         }
     }
 
-    /*****************按钮功能******************/
-    void Select_Answer(int index)
+    private void ResetTips()
+    {
+        tipsbtn.SetActive(false);
+        tipsText.text = "";
+    }
+
+    private void UpdateQuestionDisplay()
+    {
+        if (topicIndex >= topicMax)
+        {
+            return;
+        }
+
+        indexText.text = "Question " + (topicIndex + 1);
+        TM_Text.text = ArrayX[topicIndex][1];
+        int optionCount = Mathf.Min(ArrayX[topicIndex].Length - 3, DA_TextList.Count);
+
+        for (int x = 0; x < DA_TextList.Count; x++)
+        {
+            if (x < optionCount)
+            {
+                DA_TextList[x].text = ArrayX[topicIndex][x + 2];
+                DA_TextList[x].transform.parent.gameObject.SetActive(true);
+            }
+            else
+            {
+                DA_TextList[x].transform.parent.gameObject.SetActive(false);
+            }
+        }
+    }
+
+    private void Select_Answer(int index)
     {
         switch (index)
         {
-            case 0://提示
-                int idx = ArrayX[topicIndex].Length - 1;
-                int n = int.Parse(ArrayX[topicIndex][idx]);
-                string nM = "";
-                switch (n)
-                {
-                    case 1:
-                        nM = "A";
-                        break;
-                    case 2:
-                        nM = "B";
-                        break;
-                    case 3:
-                        nM = "C";
-                        break;
-                    case 4:
-                        nM = "D";
-                        break;
-                }
-                tipsText.text = "<color=#FFAB08FF>" +"Correct Answer is "+ nM + "</color>";
+            case 0: // 提示
+                ShowTip();
                 break;
-            case 1://上一题
-                if (topicIndex > 0)
-                {
-                    topicIndex--;
-                    LoadAnswer();
-                }
-                else
-                {
-                    tipsText.text = "<color=#27FF02FF>" + "Not more question before" + "</color>";
-                }
+            case 1: // 上一题
+                NavigateToPreviousQuestion();
                 break;
-            case 2://下一题
-                if (topicIndex < topicMax-1)
-                {
-                    topicIndex++;
-                    LoadAnswer();
-                }
-                else
-                {
-                    tipsText.text = "<color=#27FF02FF>" + "Already is last one" + "</color>";
-                    // 检查是否所有题目都已回答
-                    if (IsQuizComplete())
-                    {
-                        OnQuizComplete();
-                    }
-                }
+            case 2: // 下一题
+                NavigateToNextQuestion();
                 break;
         }
     }
 
-    /*****************题目对错判断******************/
-    void AnswerRightWrongJudgment(bool check, int index)
+    private void ShowTip()
     {
-        if (check)
+        if (topicIndex >= topicMax) return;
+
+        int correctAnswerIndex = int.Parse(ArrayX[topicIndex][ArrayX[topicIndex].Length - 1]) - 1;
+        string correctAnswerLetter = "ABCD"[correctAnswerIndex].ToString();
+        tipsText.text = $"<color=#FFAB08FF>Correct Answer is {correctAnswerLetter}</color>";
+    }
+
+    private void NavigateToPreviousQuestion()
+    {
+        if (topicIndex > 0)
         {
-            //判断题目对错
-            bool isRight;
-            int idx = ArrayX[topicIndex].Length - 1;
-            int n = int.Parse(ArrayX[topicIndex][idx]) - 1;
-            if (n == index)
+            topicIndex--;
+            LoadAnswer();
+        }
+        else
+        {
+            tipsText.text = "<color=#27FF02FF>Not more question before</color>";
+        }
+    }
+
+    private void NavigateToNextQuestion()
+    {
+        if (topicIndex < topicMax - 1)
+        {
+            topicIndex++;
+            LoadAnswer();
+        }
+        else
+        {
+            OnQuizComplete();
+        }
+    }
+
+    private void AnswerRightWrongJudgment(bool isOn, int index)
+    {
+        if (!isOn || topicIndex >= topicMax) return;
+
+        int correctAnswerIndex = int.Parse(ArrayX[topicIndex][ArrayX[topicIndex].Length - 1]) - 1;
+        bool isCorrect = (index == correctAnswerIndex);
+
+        UpdateTipsForAnswer(isCorrect);
+        UpdateAccuracy(isCorrect);
+        DisableToggles();
+
+        if (topicIndex == topicMax - 1)
+        {
+            OnQuizComplete();
+        }
+    }
+
+    private void UpdateTipsForAnswer(bool isCorrect)
+    {
+        tipsText.text = isCorrect ? "<color=#27FF02FF>Correct!</color>" : "<color=#FF0020FF>Sorry, wrong answer</color>";
+        tipsbtn.SetActive(true);
+    }
+
+    private void UpdateAccuracy(bool isCorrect)
+    {
+        if (!isAnserList[topicIndex])
+        {
+            anserint++;
+            if (isCorrect) isRightNum++;
+            isAnserList[topicIndex] = true;
+            displayedAccuracy = (float)isRightNum / anserint * 100;
+            TextAccuracy.text = $"Accuracy {displayedAccuracy:F2}%";
+        }
+        else
+        {
+            tipsText.text = "<color=#FF0020FF>Already answered</color>";
+        }
+    }
+
+    private void DisableToggles()
+    {
+        foreach (var toggle in toggleList)
+        {
+            toggle.interactable = false;
+        }
+    }
+
+    private void OnQuizComplete()
+    {
+        Debug.Log($"Quiz completed for {currentPlantName}. Displayed accuracy: {displayedAccuracy:F2}%");
+
+        string resultMessage;
+        if (displayedAccuracy >= PASS_THRESHOLD * 100)
+        {
+            resultMessage = "\n<color=#27FF02FF>Congratulations! You passed the quiz and unlocked the plant!</color>";
+            if (quizManager != null)
             {
-                tipsText.text = "<color=#27FF02FF>" + "Correct!" + "</color>";
-                isRight = true;
-                tipsbtn.SetActive(true);
+                quizManager.SetPlantUnlockStatus(currentPlantName, true);
+                Debug.Log($"{currentPlantName} unlocked!");
             }
             else
             {
-                tipsText.text = "<color=#FF0020FF>" + "Sorry, wrong answer" + "</color>";
-                isRight = false;
-                tipsbtn.SetActive(true);
-            }
-
-            //正确率计算
-            if (isAnserList[topicIndex])
-            {
-                tipsText.text = "<color=#FF0020FF>" + "Already answered" + "</color>";
-            }
-            else
-            {
-                anserint++;
-                if (isRight)
-                {
-                    isRightNum++;
-                }
-                isAnserList[topicIndex] = true;
-                TextAccuracy.text = "Accuracy " + ((float)isRightNum / anserint * 100).ToString("f2") + "%";
-            }
-
-            //禁用掉选项
-            for (int i = 0; i < toggleList.Count; i++)
-            {
-                toggleList[i].interactable = false;
-            }
-
-            // 在回答完最后一题后检查是否完成测验
-            if (topicIndex == topicMax - 1 && IsQuizComplete())
-            {
-                OnQuizComplete();
+                Debug.LogError("QuizManager is null, can't update plant unlock status!");
             }
         }
-    }
-
-    bool IsQuizComplete()
-    {
-        return isAnserList.TrueForAll(answered => answered);
-    }
-
-    void OnQuizComplete()
-    {
-        if (quizCompleteHandler != null)
+        else
         {
-            quizCompleteHandler.OnQuizComplete(topicMax, isRightNum);
+            resultMessage = "\n<color=#FF0020FF>Quiz failed. Try again to unlock the plant.</color>";
+            Debug.Log($"Quiz failed. Required accuracy: {PASS_THRESHOLD * 100:F2}%");
         }
-        Debug.Log($"Quiz completed! Total questions: {topicMax}, Correct answers: {isRightNum}");
-    }
 
-    // 可以添加一个方法来设置 quizCompleteHandler
-    public void SetQuizCompleteHandler(IQuizCompleteHandler handler)
-    {
-        quizCompleteHandler = handler;
+        // 更新UI显示最终结果
+        TextAccuracy.text += " " + resultMessage;
+
+        // 禁用所有答题按钮和导航按钮
+        DisableToggles();
+        BtnBack.interactable = false;
+        BtnNext.interactable = false;
+        BtnTip.interactable = false;
+
+        // 这里可以添加返回选择植物场景的逻辑
+        // 例如：SceneManager.LoadScene("SelectPlantScene");
     }
 }
