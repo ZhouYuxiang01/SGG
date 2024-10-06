@@ -1,67 +1,82 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class PlantDictionary : MonoBehaviour
 {
- [System.Serializable]
+    [System.Serializable]
     public class PlantEntry
     {
         public string plantName;
         public Image plantImage;
-        public Text plantNameText;
-        public Sprite unlockedSprite;
-        public Sprite lockedSprite;
+        public TextMeshProUGUI plantNameText;
     }
 
     public List<PlantEntry> plants = new List<PlantEntry>();
-    private const float UNLOCK_THRESHOLD = 0.6f; // 60% 正确率阈值
+    public Color lockedColor = Color.black;
+    public Color unlockedColor = Color.white;
+    public string lockedNameText = "???";
 
-    void Start()
+    private void Start()
     {
-        LoadDictionaryState();
-        UpdateDictionaryDisplay();
+        UpdateAllPlants();
     }
 
-    public void UnlockPlant(string plantName, float correctRate)
+    private void Update()
     {
-        if (correctRate >= UNLOCK_THRESHOLD)
+        // ����ݼ�
+        if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.LeftControl))
         {
-            PlayerPrefs.SetInt("Plant_" + plantName, 1);
-            PlayerPrefs.Save();
-            UpdateDictionaryDisplay();
+            if (Input.GetKeyDown(KeyCode.I))
+            {
+                ResetAllPlants();
+            }
+            else if (Input.GetKeyDown(KeyCode.O))
+            {
+                UnlockAllPlants();
+            }
         }
     }
 
-    private void LoadDictionaryState()
+    public void UpdateAllPlants()
     {
         foreach (var plant in plants)
         {
-            int isUnlocked = PlayerPrefs.GetInt("Plant_" + plant.plantName, 0);
-            plant.plantImage.sprite = isUnlocked == 1 ? plant.unlockedSprite : plant.lockedSprite;
-            plant.plantNameText.text = isUnlocked == 1 ? plant.plantName : "???";
+            UpdatePlantDisplay(plant.plantName);
         }
     }
 
-    private void UpdateDictionaryDisplay()
+    public void UpdatePlantDisplay(string plantName)
     {
-        foreach (var plant in plants)
+        PlantEntry plant = plants.Find(p => p.plantName == plantName);
+        if (plant != null)
         {
-            int isUnlocked = PlayerPrefs.GetInt("Plant_" + plant.plantName, 0);
-            plant.plantImage.sprite = isUnlocked == 1 ? plant.unlockedSprite : plant.lockedSprite;
-            plant.plantNameText.text = isUnlocked == 1 ? plant.plantName : "???";
+            bool isUnlocked = PlayerPrefs.GetInt("Plant_" + plantName, 0) == 1;
+            plant.plantImage.color = isUnlocked ? unlockedColor : lockedColor;
+            plant.plantNameText.text = isUnlocked ? plant.plantName : lockedNameText;
         }
     }
 
-    // 可以添加一个方法来重置所有植物的解锁状态（用于测试）
     public void ResetAllPlants()
     {
         foreach (var plant in plants)
         {
-            PlayerPrefs.DeleteKey("Plant_" + plant.plantName);
+            PlayerPrefs.SetInt("Plant_" + plant.plantName, 0);
         }
         PlayerPrefs.Save();
-        UpdateDictionaryDisplay();
+        UpdateAllPlants();
+        Debug.Log("All plants have been reset to locked state.");
+    }
+
+    public void UnlockAllPlants()
+    {
+        foreach (var plant in plants)
+        {
+            PlayerPrefs.SetInt("Plant_" + plant.plantName, 1);
+        }
+        PlayerPrefs.Save();
+        UpdateAllPlants();
+        Debug.Log("All plants have been unlocked.");
     }
 }
