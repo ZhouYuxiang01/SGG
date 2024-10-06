@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 public class QuizManager : MonoBehaviour
 {
+    public static QuizManager Instance { get; private set; }
+
     [System.Serializable]
     public class PlantQuiz
     {
@@ -13,9 +15,21 @@ public class QuizManager : MonoBehaviour
     public List<PlantQuiz> plantQuizzes = new List<PlantQuiz>();
     private Answer answerScript;
 
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
     private void Start()
     {
-        answerScript = FindObjectOfType<Answer>();
         string selectedPlant = PlayerPrefs.GetString("SelectedPlant", "");
         if (!string.IsNullOrEmpty(selectedPlant))
         {
@@ -23,12 +37,23 @@ public class QuizManager : MonoBehaviour
         }
     }
 
-    private void LoadQuizForPlant(string plantName)
+    public void LoadQuizForPlant(string plantName)
     {
+        if (answerScript == null)
+        {
+            answerScript = FindObjectOfType<Answer>();
+        }
+
+        if (answerScript == null)
+        {
+            Debug.LogError("Answer script not found in the scene!");
+            return;
+        }
+
         PlantQuiz quiz = plantQuizzes.Find(q => q.plantName == plantName);
         if (quiz != null && quiz.quizTextAsset != null)
         {
-            answerScript.InitializeQuiz(plantName, quiz.quizTextAsset.text);
+            answerScript.InitializeQuiz(quiz.quizTextAsset.text);
         }
         else
         {
@@ -36,9 +61,9 @@ public class QuizManager : MonoBehaviour
         }
     }
 
-    public void SetPlantUnlockStatus(string plantName, bool isUnlocked)
+    public TextAsset GetQuizTextAsset(string plantName)
     {
-        PlayerPrefs.SetInt("Plant_" + plantName, isUnlocked ? 1 : 0);
-        PlayerPrefs.Save();
+        PlantQuiz quiz = plantQuizzes.Find(q => q.plantName == plantName);
+        return quiz?.quizTextAsset;
     }
 }
