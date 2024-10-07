@@ -43,7 +43,9 @@ public class PlantDisplaySystem : MonoBehaviour
     private float lastInteractionTime;
     private bool isAutoRotating = true;
     private string currentPlantName;
-    private string dataFilePath = "Assets/PlantData.txt";
+    //private string dataFilePath = Path.Combine(Application.streamingAssetsPath, "PlantData.txt");
+    //private string dataFilePath = "Assets/PlantData.txt";
+    private string dataFilePath = "/PlantGame/PlantData.txt";
 
     private void Start()
     {
