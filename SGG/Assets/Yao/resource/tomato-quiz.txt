@@ -1,0 +1,5 @@
+1:What is the scientific name of tomato?:A, Brassica oleracea:B, Zea mays:C, Allium cepa:D, Solanum lycopersicum:4
+2:Which part of the tomato plant do we usually eat?:A, Leaves:B, Roots:C, Fruit:D, Flowers:3
+3:Where did tomatoes originally come from?:A, Western South America:B, Eastern North America:C, Europe:D, Asia:1
+4:When is the best time to plant tomatoes?:A, Spring:B, Summer:C, Fall:D, Winter:1
+5:Which of these is a common tomato dish?:A, Carrot Soup:B, Cornbread:C, Caprese Salad:D, Sauerkraut:3

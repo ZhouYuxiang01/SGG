@@ -1,0 +1,5 @@
+1:Which of these is not a common type of onion?:A, Red onion:B, Yellow onion:C, White onion:D, Blue onion:4
+2:What compound causes tears when cutting onions?:A, Capsaicin:B, Allicin:C, Syn-propanethial-S-oxide:D, Piperine:3
+3:Which color onion is typically the sweetest?:A, White:B, Yellow:C, Red:D, Green:3
+4:Onions belong to which plant family?:A, Solanaceae:B, Brassicaceae:C, Amaryllidaceae:D, Cucurbitaceae:3
+5:Which part of the onion plant do we typically eat?:A, Root:B, Stem:C, Leaf:D, Bulb:4

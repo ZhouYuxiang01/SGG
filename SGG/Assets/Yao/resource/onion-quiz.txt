@@ -1,0 +1,5 @@
+1:What is the scientific name of onion?:A, Brassica oleracea:B, Zea mays:C, Allium cepa:D, Solanum lycopersicum:3
+2:Which parts of the onion plant can we eat?:A, Only the bulb:B, Only the leaves:C, Bulb and leaves:D, Only the flowers:3
+3:Where did onions originally come from?:A, Europe:B, Africa:C, South America:D, Central Asia:4
+4:When can we plant onions?:A, Only in Spring:B, Only in Fall:C, Spring or Fall:D, Only in Summer:3
+5:Which of these is a common onion dish?:A, Popcorn:B, French Onion Soup:C, Carrot Cake:D, Cornbread:2
