@@ -1,17 +1,47 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class Loadsecnce : MonoBehaviour
+public class LoadScene : MonoBehaviour
 {
-    // Start is called before the first frame update
-    public string targetSceneName;
+    public string mainSceneName;  // 主场景的名称
 
-    // 此方法应连接到你的 UI Button 的 OnClick 事件
-    public void SwitchLevel()
+    private void Start()
     {
-        // 切换到目标场景
-        SceneManager.LoadScene(targetSceneName);
+        // 确保主场景名称已设置
+        if (string.IsNullOrEmpty(mainSceneName))
+        {
+            Debug.LogError("Main scene name is not set in LoadScene script!");
+        }
+    }
+
+    public void ReturnToMainScene()
+    {
+        Debug.Log("Attempting to return to main scene: " + mainSceneName);
+
+        // 获取当前加载的所有场景
+        int sceneCount = SceneManager.sceneCount;
+        for (int i = 0; i < sceneCount; i++)
+        {
+            Scene scene = SceneManager.GetSceneAt(i);
+            Debug.Log("Loaded scene: " + scene.name + ", Build Index: " + scene.buildIndex);
+
+            if (scene.name != mainSceneName)
+            {
+                Debug.Log("Unloading scene: " + scene.name);
+                SceneManager.UnloadSceneAsync(scene);
+            }
+        }
+
+        // 查找主场景并激活它
+        Scene mainScene = SceneManager.GetSceneByName(mainSceneName);
+        if (mainScene.IsValid())
+        {
+            Debug.Log("Activating main scene: " + mainSceneName);
+            SceneManager.SetActiveScene(mainScene);
+        }
+        else
+        {
+            Debug.LogError("Main scene not found: " + mainSceneName);
+        }
     }
 }

@@ -37,6 +37,7 @@ public class PlantDictionary : MonoBehaviour
                 UnlockAllPlants();
             }
         }
+        UpdateAllPlants();
     }
 
     public void UpdateAllPlants()

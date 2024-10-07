@@ -33,9 +33,9 @@ public class RandomModelSpawner : MonoBehaviour
             model.transform.position = cubes[cubeIndex].transform.position;
 
             // 如果模型还没有 ItemPickup 组件，就添加它
-            if (model.GetComponent<ItemPickupAndDisplay>() == null)
+            if (model.GetComponent<ItemInteractionAndCameraSwitch>() == null)
             {
-                model.AddComponent<ItemPickupAndDisplay>();
+                model.AddComponent<ItemInteractionAndCameraSwitch>();
 
                 // 检查模型是否有 Collider 和 Rigidbody，确保碰撞检测正常
                 if (model.GetComponent<Collider>() == null)

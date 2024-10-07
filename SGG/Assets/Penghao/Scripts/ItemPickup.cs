@@ -1,74 +1,89 @@
 using UnityEngine;
-using UnityEngine.UI; // 引入UI命名空间
+using UnityEngine.UI;
 
-public class ItemPickupAndDisplay : MonoBehaviour
+public class ItemInteractionAndCameraSwitch : MonoBehaviour
 {
-    private bool isPickedUp = false; // 防止重复拾取
-    public AudioSource audioSource; // 连接到外部的 AudioSource
-    public AudioClip pickUpSound; // 可自定义的拾取音效
     public string itemName = "Item"; // 自定义物品名称（如萝卜、西兰花）
-
     public Image itemImage; // 公开的Image，用于显示
-    private bool isPlayerNearby = false; // 用于检测玩家是否靠近
+    public Camera playerCamera; // 玩家的第一人称相机
+    public Camera displayCamera; // 展台相机
+    public PlantDisplaySystem plantDisplaySystem; // 植物展示系统的引用
+
+    private bool isPlayerNearby = false;
+    private bool isInDisplayMode = false;
 
     private void Start()
     {
         // 确保图片在一开始是隐藏的
         if (itemImage != null)
         {
-            itemImage.gameObject.SetActive(false); // 隐藏图片
+            itemImage.gameObject.SetActive(false);
+        }
+
+        // 确保玩家相机是激活的，展台相机是禁用的
+        if (playerCamera != null) playerCamera.gameObject.SetActive(true);
+        if (displayCamera != null) displayCamera.gameObject.SetActive(false);
+    }
+
+    private void Update()
+    {
+        if (isPlayerNearby && Input.GetKeyDown(KeyCode.E))
+        {
+            SwitchToDisplayMode();
+        }
+        else if (isInDisplayMode && Input.GetKeyDown(KeyCode.Escape))
+        {
+            SwitchToPlayerMode();
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        // 检查玩家是否进入触发区域
-        if (other.CompareTag("Player"))
+        if (other.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
             isPlayerNearby = true;
-
-            // 显示图片
             if (itemImage != null)
             {
-                itemImage.gameObject.SetActive(true); // 显示图片
+                itemImage.gameObject.SetActive(true);
             }
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        // 检查玩家是否离开触发区域
-        if (other.CompareTag("Player"))
+        if (other.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
             isPlayerNearby = false;
-
-            // 隐藏图片
             if (itemImage != null)
             {
-                itemImage.gameObject.SetActive(false); // 隐藏图片
+                itemImage.gameObject.SetActive(false);
             }
         }
     }
 
-    // 添加一个方法来实现拾取，可能是在玩家按下某个键时
-    public void TryPickup()
+    private void SwitchToDisplayMode()
     {
-        if (isPlayerNearby && !isPickedUp)
+        isInDisplayMode = true;
+        if (playerCamera != null) playerCamera.gameObject.SetActive(false);
+        if (displayCamera != null) displayCamera.gameObject.SetActive(true);
+
+        // 使用植物展示系统显示当前植物
+        if (plantDisplaySystem != null)
         {
-            isPickedUp = true;
-
-            // 播放拾取音效
-            if (audioSource != null && pickUpSound != null)
-            {
-                audioSource.PlayOneShot(pickUpSound); // 使用 AudioSource 播放音效
-            }
-
-            // 显示拾取信息
-            Debug.Log("Picked up: " + itemName);
-
-            // 隐藏图片，销毁物体（你可以选择立即销毁，或者延时销毁）
-            itemImage.gameObject.SetActive(false);
-            Destroy(gameObject); // 这里销毁物品
+            plantDisplaySystem.DisplayPlant(itemName);
         }
+
+        // 禁用玩家输入（您可能需要根据您的输入系统调整这部分）
+        // 例如：playerInputSystem.enabled = false;
+    }
+
+    private void SwitchToPlayerMode()
+    {
+        isInDisplayMode = false;
+        if (playerCamera != null) playerCamera.gameObject.SetActive(true);
+        if (displayCamera != null) displayCamera.gameObject.SetActive(false);
+
+        // 重新启用玩家输入
+        // 例如：playerInputSystem.enabled = true;
     }
 }

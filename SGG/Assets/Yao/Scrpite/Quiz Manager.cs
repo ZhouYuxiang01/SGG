@@ -1,10 +1,9 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class QuizManager : MonoBehaviour
 {
-    public static QuizManager Instance { get; private set; }
-
     [System.Serializable]
     public class PlantQuiz
     {
@@ -17,19 +16,39 @@ public class QuizManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null)
+        // 确保只有一个 QuizManager 实例
+        if (FindObjectsOfType<QuizManager>().Length > 1)
         {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
+            Destroy(gameObject);
         }
         else
         {
-            Destroy(gameObject);
+            DontDestroyOnLoad(gameObject);
         }
     }
 
     private void Start()
     {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+        InitializeQuiz();
+    }
+
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == "Question")
+        {
+            InitializeQuiz();
+        }
+    }
+
+    private void InitializeQuiz()
+    {
+        FindAnswerScript();
         string selectedPlant = PlayerPrefs.GetString("SelectedPlant", "");
         if (!string.IsNullOrEmpty(selectedPlant))
         {
@@ -37,23 +56,26 @@ public class QuizManager : MonoBehaviour
         }
     }
 
+    private void FindAnswerScript()
+    {
+        answerScript = FindObjectOfType<Answer>();
+        if (answerScript == null)
+        {
+            Debug.LogError("Answer script not found in the scene!");
+        }
+    }
+
     public void LoadQuizForPlant(string plantName)
     {
         if (answerScript == null)
         {
-            answerScript = FindObjectOfType<Answer>();
-        }
-
-        if (answerScript == null)
-        {
-            Debug.LogError("Answer script not found in the scene!");
-            return;
+            FindAnswerScript();
         }
 
         PlantQuiz quiz = plantQuizzes.Find(q => q.plantName == plantName);
         if (quiz != null && quiz.quizTextAsset != null)
         {
-            answerScript.InitializeQuiz(quiz.quizTextAsset.text);
+            answerScript.InitializeQuiz(plantName, quiz.quizTextAsset.text);
         }
         else
         {
@@ -61,9 +83,37 @@ public class QuizManager : MonoBehaviour
         }
     }
 
-    public TextAsset GetQuizTextAsset(string plantName)
+    public void SetPlantUnlockStatus(string plantName, bool isUnlocked)
     {
-        PlantQuiz quiz = plantQuizzes.Find(q => q.plantName == plantName);
-        return quiz?.quizTextAsset;
+        PlayerPrefs.SetInt("Plant_" + plantName, isUnlocked ? 1 : 0);
+        PlayerPrefs.Save();
+
+        // 通知第一个场景中的 PlantDictionary 更新显示
+        UpdatePlantDictionaryInMainScene(plantName);
+    }
+
+    private void UpdatePlantDictionaryInMainScene(string plantName)
+    {
+        // 查找主场景
+        Scene mainScene = SceneManager.GetSceneAt(0);
+        if (mainScene.isLoaded)
+        {
+            // 在主场景中查找 PlantDictionary
+            GameObject[] rootObjects = mainScene.GetRootGameObjects();
+            foreach (var rootObject in rootObjects)
+            {
+                PlantDictionary dictionary = rootObject.GetComponentInChildren<PlantDictionary>();
+                if (dictionary != null)
+                {
+                    dictionary.UpdatePlantDisplay(plantName);
+                    break;
+                }
+            }
+        }
+    }
+
+    public bool IsPlantUnlocked(string plantName)
+    {
+        return PlayerPrefs.GetInt("Plant_" + plantName, 0) == 1;
     }
 }
