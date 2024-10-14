@@ -1,0 +1,5 @@
+1:Which of these is not a common variety of tomato?:A, Cherry tomato:B, Beefsteak tomato:C, Roma tomato:D, Zucchini tomato:4
+2:What gives tomatoes their red color?:A, Anthocyanin:B, Chlorophyll:C, Lycopene:D, Beta-carotene:3
+3:Botanically, a tomato is classified as a:A, Vegetable:B, Fruit:C, Berry:D, Root:2
+4:Which country is the world's largest producer of tomatoes?:A, United States:B, Italy:C, Spain:D, China:4
+5:What nutrient are tomatoes particularly high in?:A, Vitamin C:B, Iron:C, Calcium:D, Vitamin B12:1
