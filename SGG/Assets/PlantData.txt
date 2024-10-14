@@ -1,0 +1,34 @@
+Plant: Cabbage
+Scientific Name: Brassica oleracea var. capitata
+Edible Parts: Leaves
+Origin: Mediterranean region
+Planting Season: Spring or Fall
+Common Dishes: Coleslaw, Cabbage Rolls, Sauerkraut
+
+Plant: Corn
+Scientific Name: Zea mays
+Edible Parts: Kernels, Corn silk
+Origin: Mexico
+Planting Season: Spring
+Common Dishes: Corn on the Cob, Cornbread, Popcorn
+
+Plant: Onion
+Scientific Name: Allium cepa
+Edible Parts: Bulb, Leaves
+Origin: Central Asia
+Planting Season: Spring or Fall
+Common Dishes: French Onion Soup, Onion Rings, Caramelized Onions
+
+Plant: Tomato
+Scientific Name: Solanum lycopersicum
+Edible Parts: Fruit
+Origin: Western South America
+Planting Season: Spring
+Common Dishes: Tomato Sauce, Caprese Salad, Bruschetta
+
+Plant: Carrot
+Scientific Name: Daucus carota subsp. sativus
+Edible Parts: Root, Leaves
+Origin: Central Asia
+Planting Season: Spring or Fall
+Common Dishes: Carrot Cake, Glazed Carrots, Carrot Soup

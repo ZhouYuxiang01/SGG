@@ -29,10 +29,19 @@ public class Answer : MonoBehaviour
     private int topicIndex = 0;
     private int anserint = 0;
     private int isRightNum = 0;
+    private QuizManager quizManager;
+    private string currentPlantName;
+    private float displayedAccuracy = 0f;
+    private const float PASS_THRESHOLD = 0.6f; // 60% 通过阈值
 
     private void Start()
     {
         SetupListeners();
+        quizManager = FindObjectOfType<QuizManager>();
+        if (quizManager == null)
+        {
+            Debug.LogError("QuizManager not found in the scene!");
+        }
     }
 
     private void SetupListeners()
@@ -48,8 +57,9 @@ public class Answer : MonoBehaviour
         BtnNext.onClick.AddListener(() => Select_Answer(2));
     }
 
-    public void InitializeQuiz(string quizText)
+    public void InitializeQuiz(string plantName, string quizText)
     {
+        currentPlantName = plantName;
         ParseQuizText(quizText);
         ResetQuiz();
         LoadAnswer();
@@ -76,11 +86,18 @@ public class Answer : MonoBehaviour
         topicIndex = 0;
         anserint = 0;
         isRightNum = 0;
+        displayedAccuracy = 0f;
         TextAccuracy.text = "Accuracy 0%";
     }
 
     private void LoadAnswer()
     {
+        if (topicIndex >= topicMax)
+        {
+            OnQuizComplete();
+            return;
+        }
+
         ResetToggles();
         ResetTips();
         UpdateQuestionDisplay();
@@ -103,10 +120,15 @@ public class Answer : MonoBehaviour
 
     private void UpdateQuestionDisplay()
     {
+        if (topicIndex >= topicMax)
+        {
+            return;
+        }
+
         indexText.text = "Question " + (topicIndex + 1);
         TM_Text.text = ArrayX[topicIndex][1];
-        int optionCount = ArrayX[topicIndex].Length - 3;
-        
+        int optionCount = Mathf.Min(ArrayX[topicIndex].Length - 3, DA_TextList.Count);
+
         for (int x = 0; x < DA_TextList.Count; x++)
         {
             if (x < optionCount)
@@ -139,6 +161,8 @@ public class Answer : MonoBehaviour
 
     private void ShowTip()
     {
+        if (topicIndex >= topicMax) return;
+
         int correctAnswerIndex = int.Parse(ArrayX[topicIndex][ArrayX[topicIndex].Length - 1]) - 1;
         string correctAnswerLetter = "ABCD"[correctAnswerIndex].ToString();
         tipsText.text = $"<color=#FFAB08FF>Correct Answer is {correctAnswerLetter}</color>";
@@ -166,13 +190,13 @@ public class Answer : MonoBehaviour
         }
         else
         {
-            tipsText.text = "<color=#27FF02FF>Already is last one</color>";
+            OnQuizComplete();
         }
     }
 
     private void AnswerRightWrongJudgment(bool isOn, int index)
     {
-        if (!isOn) return;
+        if (!isOn || topicIndex >= topicMax) return;
 
         int correctAnswerIndex = int.Parse(ArrayX[topicIndex][ArrayX[topicIndex].Length - 1]) - 1;
         bool isCorrect = (index == correctAnswerIndex);
@@ -180,6 +204,11 @@ public class Answer : MonoBehaviour
         UpdateTipsForAnswer(isCorrect);
         UpdateAccuracy(isCorrect);
         DisableToggles();
+
+        if (anserint == topicMax)
+        {
+            OnQuizComplete();
+        }
     }
 
     private void UpdateTipsForAnswer(bool isCorrect)
@@ -195,7 +224,8 @@ public class Answer : MonoBehaviour
             anserint++;
             if (isCorrect) isRightNum++;
             isAnserList[topicIndex] = true;
-            TextAccuracy.text = $"Accuracy {((float)isRightNum / anserint * 100):F2}%";
+            displayedAccuracy = (float)isRightNum / anserint * 100;
+            TextAccuracy.text = $"Accuracy {displayedAccuracy:F2}%";
         }
         else
         {
@@ -204,6 +234,48 @@ public class Answer : MonoBehaviour
     }
 
     private void DisableToggles()
+    {
+        foreach (var toggle in toggleList)
+        {
+            toggle.interactable = false;
+        }
+    }
+
+    private void OnQuizComplete()
+    {
+        Debug.Log($"Quiz completed for {currentPlantName}. Displayed accuracy: {displayedAccuracy:F2}%");
+
+        string resultMessage;
+        if (displayedAccuracy >= PASS_THRESHOLD * 100)
+        {
+            resultMessage = "<color=#27FF02FF>Congratulations! You passed the quiz and unlocked the plant!</color>";
+            if (quizManager != null)
+            {
+                quizManager.SetPlantUnlockStatus(currentPlantName, true);
+                Debug.Log($"{currentPlantName} unlocked!");
+            }
+            else
+            {
+                Debug.LogError("QuizManager is null, can't update plant unlock status!");
+            }
+        }
+        else
+        {
+            resultMessage = "<color=#FF0020FF>Quiz failed. Try again to unlock the plant.</color>";
+            Debug.Log($"Quiz failed. Required accuracy: {PASS_THRESHOLD * 100:F2}%");
+        }
+
+        // 更新UI显示最终结果
+        TextAccuracy.text += " " + resultMessage;
+
+        // 禁用所有答题按钮和导航按钮
+        DisableAllToggles();
+        BtnBack.interactable = false;
+        BtnNext.interactable = false;
+        BtnTip.interactable = false;
+    }
+
+    private void DisableAllToggles()
     {
         foreach (var toggle in toggleList)
         {

@@ -1,0 +1,5 @@
+1:What is the scientific name of carrot?:A, Brassica oleracea:B, Zea mays:C, Allium cepa:D, Daucus carota:4
+2:Which parts of the carrot plant can we eat?:A, Only the root:B, Only the leaves:C, Root and leaves:D, Only the flowers:3
+3:Where did carrots originally come from?:A, Europe:B, Africa:C, South America:D, Central Asia:4
+4:When can we plant carrots?:A, Only in Spring:B, Only in Fall:C, Spring or Fall:D, Only in Summer:3
+5:Which of these is a common carrot dish?:A, Carrot Cake:B, French Onion Soup:C, Cornbread:D, Sauerkraut:1

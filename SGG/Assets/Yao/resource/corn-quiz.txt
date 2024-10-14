@@ -1,0 +1,5 @@
+1:What is the scientific name of corn?:A, Brassica oleracea:B, Zea mays:C, Allium cepa:D, Solanum lycopersicum:2
+2:Which parts of the corn plant can we eat?:A, Leaves:B, Roots:C, Kernels and Corn silk:D, Stem:3
+3:Where did corn originally come from?:A, United States:B, Mexico:C, China:D, Italy:2
+4:When is the best time to plant corn?:A, Spring:B, Summer:C, Fall:D, Winter:1
+5:Which of these is a common corn dish?:A, Sauerkraut:B, French Onion Soup:C, Cornbread:D, Carrot Cake:3

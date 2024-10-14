@@ -1,0 +1,5 @@
+1:What is the scientific name of cabbage?:A, Brassica oleracea:B, Zea mays:C, Allium cepa:D, Solanum lycopersicum:1
+2:Which part of the cabbage plant do we usually eat?:A, Roots:B, Leaves:C, Flowers:D, Seeds:2
+3:Where did cabbage originally come from?:A, China:B, America:C, Mediterranean region:D, Africa:3
+4:When is a good time to plant cabbage?:A, Summer:B, Winter:C, Spring or Fall:D, Only Spring:3
+5:Which of these is NOT a common cabbage dish?:A, Coleslaw:B, Cabbage Rolls:C, Sauerkraut:D, Popcorn:4
