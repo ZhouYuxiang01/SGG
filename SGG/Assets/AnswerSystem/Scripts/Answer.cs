@@ -59,6 +59,12 @@ public class Answer : MonoBehaviour
 
     public void InitializeQuiz(string plantName, string quizText)
     {
+        if (string.IsNullOrEmpty(quizText))
+        {
+            Debug.LogError("Quiz text is empty!");
+            return;
+        }
+
         currentPlantName = plantName;
         ParseQuizText(quizText);
         ResetQuiz();
@@ -67,18 +73,30 @@ public class Answer : MonoBehaviour
 
     private void ParseQuizText(string quizText)
     {
-        lineArray = quizText.Split('\n');
+        // 移除空行并分割
+        lineArray = quizText.Split(new[] { '\n', '\r' }, System.StringSplitOptions.RemoveEmptyEntries);
         ArrayX = new string[lineArray.Length][];
+
         for (int i = 0; i < lineArray.Length; i++)
         {
-            ArrayX[i] = lineArray[i].Split(':');
+            string line = lineArray[i].Trim();
+            if (!string.IsNullOrEmpty(line))
+            {
+                ArrayX[i] = line.Split(new[] { ':' }, System.StringSplitOptions.None);
+            }
         }
-        topicMax = lineArray.Length;
+
+        // 过滤掉空数组
+        ArrayX = System.Array.FindAll(ArrayX, x => x != null && x.Length > 0);
+        topicMax = ArrayX.Length;
+
         isAnserList.Clear();
         for (int x = 0; x < topicMax; x++)
         {
             isAnserList.Add(false);
         }
+
+        Debug.Log($"Parsed {topicMax} questions");
     }
 
     private void ResetQuiz()
@@ -120,18 +138,32 @@ public class Answer : MonoBehaviour
 
     private void UpdateQuestionDisplay()
     {
-        if (topicIndex >= topicMax)
+        if (topicIndex >= topicMax || ArrayX == null || ArrayX[topicIndex] == null)
         {
+            Debug.LogError($"Invalid topic index: {topicIndex} or null array");
             return;
         }
 
         indexText.text = "Question " + (topicIndex + 1);
-        TM_Text.text = ArrayX[topicIndex][1];
-        int optionCount = Mathf.Min(ArrayX[topicIndex].Length - 3, DA_TextList.Count);
 
+        // 确保数组有足够的元素
+        if (ArrayX[topicIndex].Length < 2)
+        {
+            Debug.LogError($"Question {topicIndex + 1} has insufficient data");
+            return;
+        }
+
+        // 设置问题文本
+        TM_Text.text = ArrayX[topicIndex][1];
+
+        // 计算选项数量，确保不超出数组边界
+        int availableOptions = ArrayX[topicIndex].Length - 3; // 减去题号、题目文本和答案
+        int optionCount = Mathf.Max(0, Mathf.Min(availableOptions, DA_TextList.Count));
+
+        // 设置选项
         for (int x = 0; x < DA_TextList.Count; x++)
         {
-            if (x < optionCount)
+            if (x < optionCount && x + 2 < ArrayX[topicIndex].Length)
             {
                 DA_TextList[x].text = ArrayX[topicIndex][x + 2];
                 DA_TextList[x].transform.parent.gameObject.SetActive(true);
@@ -161,11 +193,36 @@ public class Answer : MonoBehaviour
 
     private void ShowTip()
     {
-        if (topicIndex >= topicMax) return;
+        if (topicIndex >= topicMax || ArrayX == null || ArrayX[topicIndex] == null)
+        {
+            Debug.LogWarning("Cannot show tip: invalid question index");
+            return;
+        }
 
-        int correctAnswerIndex = int.Parse(ArrayX[topicIndex][ArrayX[topicIndex].Length - 1]) - 1;
-        string correctAnswerLetter = "ABCD"[correctAnswerIndex].ToString();
-        tipsText.text = $"<color=#FFAB08FF>Correct Answer is {correctAnswerLetter}</color>";
+        // 确保数组有足够的元素
+        if (ArrayX[topicIndex].Length < 3)
+        {
+            Debug.LogError($"Question {topicIndex + 1} doesn't have answer data");
+            return;
+        }
+
+        try
+        {
+            int correctAnswerIndex = int.Parse(ArrayX[topicIndex][ArrayX[topicIndex].Length - 1]) - 1;
+            if (correctAnswerIndex >= 0 && correctAnswerIndex < 4)
+            {
+                string correctAnswerLetter = "ABCD"[correctAnswerIndex].ToString();
+                tipsText.text = $"<color=#FFAB08FF>Correct Answer is {correctAnswerLetter}</color>";
+            }
+            else
+            {
+                Debug.LogError($"Invalid answer index: {correctAnswerIndex}");
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Error parsing answer: {e.Message}");
+        }
     }
 
     private void NavigateToPreviousQuestion()
@@ -196,18 +253,25 @@ public class Answer : MonoBehaviour
 
     private void AnswerRightWrongJudgment(bool isOn, int index)
     {
-        if (!isOn || topicIndex >= topicMax) return;
+        if (!isOn || topicIndex >= topicMax || ArrayX == null || ArrayX[topicIndex] == null) return;
 
-        int correctAnswerIndex = int.Parse(ArrayX[topicIndex][ArrayX[topicIndex].Length - 1]) - 1;
-        bool isCorrect = (index == correctAnswerIndex);
-
-        UpdateTipsForAnswer(isCorrect);
-        UpdateAccuracy(isCorrect);
-        DisableToggles();
-
-        if (anserint == topicMax)
+        try
         {
-            OnQuizComplete();
+            int correctAnswerIndex = int.Parse(ArrayX[topicIndex][ArrayX[topicIndex].Length - 1]) - 1;
+            bool isCorrect = (index == correctAnswerIndex);
+
+            UpdateTipsForAnswer(isCorrect);
+            UpdateAccuracy(isCorrect);
+            DisableToggles();
+
+            if (anserint == topicMax)
+            {
+                OnQuizComplete();
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Error in answer judgment: {e.Message}");
         }
     }
 
@@ -265,10 +329,8 @@ public class Answer : MonoBehaviour
             Debug.Log($"Quiz failed. Required accuracy: {PASS_THRESHOLD * 100:F2}%");
         }
 
-        // 更新UI显示最终结果
         TextAccuracy.text += " " + resultMessage;
 
-        // 禁用所有答题按钮和导航按钮
         DisableAllToggles();
         BtnBack.interactable = false;
         BtnNext.interactable = false;

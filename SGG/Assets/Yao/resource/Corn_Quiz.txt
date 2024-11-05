@@ -1,0 +1,5 @@
+1:What is the appearance of corn?:A, Rounded green or purple leaves:B, Tall stalks with golden ears:C, Bulb with papery skin and green tops:D, Red, round, smooth-skinned fruit:2
+2:Which parts of the corn plant can we eat?:A, Only the kernels:B, Kernels and corn silk:C, Only the leaves:D, Only the root:2
+3:Where did corn originally come from?:A, Mediterranean region:B, Mexico:C, Central Asia:D, Western South America:2
+4:When can we plant corn?:A, Only in Spring:B, Only in Fall:C, Spring or Fall:D, Only in Summer:1
+5:Which of these is a common corn dish?:A, Popcorn:B, Carrot Cake:C, French Onion Soup:D, Sauerkraut:1

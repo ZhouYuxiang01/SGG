@@ -1,0 +1,5 @@
+1:What is the appearance of onion?:A, Rounded green or purple leaves:B, Tall stalks with golden ears:C, Bulb with papery skin and green tops:D, Red, round, smooth-skinned fruit:3
+2:Which parts of the onion plant can we eat?:A, Only the root:B, Only the leaves:C, Bulb and leaves:D, Only the flowers:3
+3:Where did onions originally come from?:A, Mediterranean region:B, Mexico:C, Central Asia:D, Western South America:3
+4:When can we plant onions?:A, Only in Spring:B, Only in Fall:C, Spring or Fall:D, Only in Summer:3
+5:Which of these is a common onion dish?:A, French Onion Soup:B, Carrot Cake:C, Cornbread:D, Sauerkraut:1

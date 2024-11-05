@@ -1,0 +1,5 @@
+1:What is the appearance of cabbage?:A, Rounded green or purple leaves:B, Tall stalks with golden ears:C, Bulb with papery skin and green tops:D, Red, round, smooth-skinned fruit:1
+2:Which parts of the cabbage plant can we eat?:A, Only the root:B, Only the leaves:C, Root and leaves:D, Only the flowers:2
+3:Where did cabbage originally come from?:A, Mediterranean region:B, Mexico:C, Central Asia:D, Western South America:1
+4:When can we plant cabbage?:A, Only in Spring:B, Only in Fall:C, Spring or Fall:D, Only in Summer:3
+5:Which of these is a common cabbage dish?:A, Coleslaw:B, French Onion Soup:C, Cornbread:D, Bruschetta:1

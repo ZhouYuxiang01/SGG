@@ -1,0 +1,5 @@
+1:What is the appearance of tomato?:A, Rounded green or purple leaves:B, Tall stalks with golden ears:C, Bulb with papery skin and green tops:D, Red, round, smooth-skinned fruit:4
+2:Which parts of the tomato plant can we eat?:A, Only the root:B, Only the leaves:C, Only the fruit:D, Only the flowers:3
+3:Where did tomatoes originally come from?:A, Mediterranean region:B, Mexico:C, Central Asia:D, Western South America:4
+4:When can we plant tomatoes?:A, Only in Spring:B, Only in Fall:C, Spring or Fall:D, Only in Summer:1
+5:Which of these is a common tomato dish?:A, Bruschetta:B, French Onion Soup:C, Cornbread:D, Sauerkraut:1

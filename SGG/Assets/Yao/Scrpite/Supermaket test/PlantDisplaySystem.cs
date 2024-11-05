@@ -3,7 +3,6 @@ using TMPro;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 
 [Serializable]
 public class PlantInfo
@@ -17,7 +16,7 @@ public class PlantDisplaySystem : MonoBehaviour
     [SerializeField] private List<PlantInfo> plants = new List<PlantInfo>();
     [SerializeField] private GameObject uiPanel;
     [SerializeField] private TextMeshProUGUI plantNameText;
-    [SerializeField] private TextMeshProUGUI scientificNameText;
+    [SerializeField] private TextMeshProUGUI appearanceText;
     [SerializeField] private TextMeshProUGUI ediblePartsText;
     [SerializeField] private TextMeshProUGUI originText;
     [SerializeField] private TextMeshProUGUI plantingSeasonText;
@@ -32,6 +31,7 @@ public class PlantDisplaySystem : MonoBehaviour
     [SerializeField] private float autoRotationResumeDelay = 3f;
     [SerializeField] private Camera displayCamera;
     [SerializeField] private Camera firstPersonCamera;
+    [SerializeField] private TextAsset plantDataFile;  // Changed to TextAsset
 
     private Dictionary<string, Dictionary<string, string>> plantData = new Dictionary<string, Dictionary<string, string>>();
     private GameObject currentPlant;
@@ -43,7 +43,6 @@ public class PlantDisplaySystem : MonoBehaviour
     private float lastInteractionTime;
     private bool isAutoRotating = true;
     private string currentPlantName;
-    private string dataFilePath = "Assets/PlantData.txt";
 
     private void Start()
     {
@@ -67,13 +66,13 @@ public class PlantDisplaySystem : MonoBehaviour
 
     private void LoadPlantData()
     {
-        if (!File.Exists(dataFilePath))
+        if (plantDataFile == null)
         {
-            Debug.LogError("Plant data file not found: " + dataFilePath);
+            Debug.LogError("Plant data file not assigned in the inspector");
             return;
         }
 
-        string[] lines = File.ReadAllLines(dataFilePath);
+        string[] lines = plantDataFile.text.Split('\n');
         string currentPlant = "";
         Dictionary<string, string> currentPlantData = new Dictionary<string, string>();
 
@@ -271,7 +270,7 @@ public class PlantDisplaySystem : MonoBehaviour
         var data = plantData[plantName];
 
         SafeSetText(plantNameText, plantName);
-        SafeSetText(scientificNameText, GetDataValue(data, "Scientific Name"));
+        SafeSetText(appearanceText, GetDataValue(data, "Appearance"));
         SafeSetText(ediblePartsText, GetDataValue(data, "Edible Parts"));
         SafeSetText(originText, GetDataValue(data, "Origin"));
         SafeSetText(plantingSeasonText, GetDataValue(data, "Planting Season"));

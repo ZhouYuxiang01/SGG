@@ -142,6 +142,14 @@ PrefabInstance:
       propertyPath: m_ReferenceResolution.y
       value: 1080
       objectReference: {fileID: 0}
+    - target: {fileID: 1828042410442719528, guid: aa87e6c9801a620488671d16115ad695, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 607.2055
+      objectReference: {fileID: 0}
+    - target: {fileID: 1828042410442719528, guid: aa87e6c9801a620488671d16115ad695, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 803.41534
+      objectReference: {fileID: 0}
     - target: {fileID: 2819217012998490649, guid: aa87e6c9801a620488671d16115ad695, type: 3}
       propertyPath: answerScript
       value: 
@@ -263,6 +271,14 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3232699343842500110, guid: aa87e6c9801a620488671d16115ad695, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 1642.237
+      objectReference: {fileID: 0}
+    - target: {fileID: 3232699343842500110, guid: aa87e6c9801a620488671d16115ad695, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 940.6522
+      objectReference: {fileID: 0}
+    - target: {fileID: 3232699343842500110, guid: aa87e6c9801a620488671d16115ad695, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.1944
       objectReference: {fileID: 0}
@@ -276,11 +292,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3232699343842500110, guid: aa87e6c9801a620488671d16115ad695, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 1
+      value: -0.000012398
       objectReference: {fileID: 0}
     - target: {fileID: 3232699343842500110, guid: aa87e6c9801a620488671d16115ad695, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -11
       objectReference: {fileID: 0}
     - target: {fileID: 5218858242214492811, guid: aa87e6c9801a620488671d16115ad695, type: 3}
       propertyPath: m_IsActive
@@ -289,6 +305,38 @@ PrefabInstance:
     - target: {fileID: 5985170662993706724, guid: aa87e6c9801a620488671d16115ad695, type: 3}
       propertyPath: m_Name
       value: Canvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 6296730118557699422, guid: aa87e6c9801a620488671d16115ad695, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 607.2055
+      objectReference: {fileID: 0}
+    - target: {fileID: 6296730118557699422, guid: aa87e6c9801a620488671d16115ad695, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 803.41534
+      objectReference: {fileID: 0}
+    - target: {fileID: 7790058593926243407, guid: aa87e6c9801a620488671d16115ad695, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 817.89
+      objectReference: {fileID: 0}
+    - target: {fileID: 7790058593926243407, guid: aa87e6c9801a620488671d16115ad695, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -226
+      objectReference: {fileID: 0}
+    - target: {fileID: 8286440168033648174, guid: aa87e6c9801a620488671d16115ad695, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 607.2055
+      objectReference: {fileID: 0}
+    - target: {fileID: 8286440168033648174, guid: aa87e6c9801a620488671d16115ad695, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 803.41534
+      objectReference: {fileID: 0}
+    - target: {fileID: 8969417290293862103, guid: aa87e6c9801a620488671d16115ad695, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 607.2055
+      objectReference: {fileID: 0}
+    - target: {fileID: 8969417290293862103, guid: aa87e6c9801a620488671d16115ad695, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 803.41534
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 2819217012998490649, guid: aa87e6c9801a620488671d16115ad695, type: 3}
@@ -1043,15 +1091,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   plantQuizzes:
   - plantName: Cabbage
-    quizTextAsset: {fileID: 4900000, guid: 3232d1764486be34a993dc8780eef069, type: 3}
+    quizTextAsset: {fileID: 4900000, guid: 9238623fecf87e549844ec28220e605f, type: 3}
   - plantName: Carrot
-    quizTextAsset: {fileID: 4900000, guid: c2c14703614972440abb5466e04f65d3, type: 3}
+    quizTextAsset: {fileID: 4900000, guid: 8e1fb262ea0ceb541834316d42220749, type: 3}
   - plantName: Corn
-    quizTextAsset: {fileID: 4900000, guid: f0f212d056346d24abdc7376655e00e8, type: 3}
+    quizTextAsset: {fileID: 4900000, guid: 7bf23eb6eddfd724ebe2e1003037e0af, type: 3}
   - plantName: Onion
-    quizTextAsset: {fileID: 4900000, guid: 69d038745e6e0ec418a151d6204e863b, type: 3}
+    quizTextAsset: {fileID: 4900000, guid: 983fa413ddaa6d644a86bb6c33924167, type: 3}
   - plantName: Tomato
-    quizTextAsset: {fileID: 4900000, guid: 8c6dd3249e7fea04f81e6bbfd24a8d4e, type: 3}
+    quizTextAsset: {fileID: 4900000, guid: e44060a89eaad674dbf76b88a9a23f20, type: 3}
 --- !u!4 &1865425583
 Transform:
   m_ObjectHideFlags: 0
