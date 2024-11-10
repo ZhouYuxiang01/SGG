@@ -32,7 +32,7 @@ public class Answer : MonoBehaviour
     private QuizManager quizManager;
     private string currentPlantName;
     private float displayedAccuracy = 0f;
-    private const float PASS_THRESHOLD = 0.6f; // 60% 通过阈值
+    private const float PASS_THRESHOLD = 0.5f; // 60% 通过阈值
 
     private void Start()
     {
