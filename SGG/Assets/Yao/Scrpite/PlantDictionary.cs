@@ -17,15 +17,48 @@ public class PlantDictionary : MonoBehaviour
     public Color lockedColor = Color.black;
     public Color unlockedColor = Color.white;
     public string lockedNameText = "???";
+    public GameObject victoryScreen;
+
+    private Dictionary<string, bool> unlockedPlants = new Dictionary<string, bool>();
 
     private void Start()
     {
+        // 确保胜利页面和鼠标一开始是隐藏的
+        if (victoryScreen != null)
+        {
+            victoryScreen.SetActive(false);
+            HideCursor();
+        }
+
+        InitializePlants();
         UpdateAllPlants();
+    }
+
+    // 显示鼠标
+    private void ShowCursor()
+    {
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+    }
+
+    // 隐藏鼠标
+    private void HideCursor()
+    {
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+    }
+
+    private void InitializePlants()
+    {
+        unlockedPlants.Clear();
+        foreach (var plant in plants)
+        {
+            unlockedPlants[plant.plantName] = false;
+        }
     }
 
     private void Update()
     {
-        // 检测快捷键
         if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.LeftControl))
         {
             if (Input.GetKeyDown(KeyCode.I))
@@ -37,7 +70,6 @@ public class PlantDictionary : MonoBehaviour
                 UnlockAllPlants();
             }
         }
-        UpdateAllPlants();
     }
 
     public void UpdateAllPlants()
@@ -46,6 +78,7 @@ public class PlantDictionary : MonoBehaviour
         {
             UpdatePlantDisplay(plant.plantName);
         }
+        CheckVictoryCondition();
     }
 
     public void UpdatePlantDisplay(string plantName)
@@ -53,7 +86,7 @@ public class PlantDictionary : MonoBehaviour
         PlantEntry plant = plants.Find(p => p.plantName == plantName);
         if (plant != null)
         {
-            bool isUnlocked = PlayerPrefs.GetInt("Plant_" + plantName, 0) == 1;
+            bool isUnlocked = unlockedPlants.ContainsKey(plantName) && unlockedPlants[plantName];
             plant.plantImage.color = isUnlocked ? unlockedColor : lockedColor;
             plant.plantNameText.text = isUnlocked ? plant.plantName : lockedNameText;
         }
@@ -63,10 +96,16 @@ public class PlantDictionary : MonoBehaviour
     {
         foreach (var plant in plants)
         {
-            PlayerPrefs.SetInt("Plant_" + plant.plantName, 0);
+            unlockedPlants[plant.plantName] = false;
         }
-        PlayerPrefs.Save();
         UpdateAllPlants();
+
+        // 重置时隐藏胜利页面和鼠标
+        if (victoryScreen != null)
+        {
+            victoryScreen.SetActive(false);
+            HideCursor();
+        }
         Debug.Log("All plants have been reset to locked state.");
     }
 
@@ -74,10 +113,55 @@ public class PlantDictionary : MonoBehaviour
     {
         foreach (var plant in plants)
         {
-            PlayerPrefs.SetInt("Plant_" + plant.plantName, 1);
+            unlockedPlants[plant.plantName] = true;
         }
-        PlayerPrefs.Save();
         UpdateAllPlants();
         Debug.Log("All plants have been unlocked.");
+    }
+
+    public void UnlockPlant(string plantName)
+    {
+        if (unlockedPlants.ContainsKey(plantName))
+        {
+            unlockedPlants[plantName] = true;
+            UpdatePlantDisplay(plantName);
+            CheckVictoryCondition();
+        }
+    }
+
+    public bool IsPlantUnlocked(string plantName)
+    {
+        return unlockedPlants.ContainsKey(plantName) && unlockedPlants[plantName];
+    }
+
+    private void CheckVictoryCondition()
+    {
+        if (victoryScreen == null)
+        {
+            Debug.LogWarning("Victory Screen is not assigned!");
+            return;
+        }
+
+        bool allUnlocked = true;
+        foreach (var plant in plants)
+        {
+            if (!unlockedPlants[plant.plantName])
+            {
+                allUnlocked = false;
+                break;
+            }
+        }
+
+        // 根据解锁状态显示或隐藏胜利页面和鼠标
+        victoryScreen.SetActive(allUnlocked);
+        if (allUnlocked)
+        {
+            ShowCursor();
+            Debug.Log("Congratulations! All plants have been discovered!");
+        }
+        else
+        {
+            HideCursor();
+        }
     }
 }
