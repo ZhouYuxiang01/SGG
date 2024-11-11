@@ -61,7 +61,7 @@ public class QuizManager : MonoBehaviour
         answerScript = FindObjectOfType<Answer>();
         if (answerScript == null)
         {
-            Debug.LogError("Answer script not found in the scene!");
+            Debug.LogError("[QuizManager] Answer script not found in the scene!");
         }
     }
 
@@ -71,7 +71,6 @@ public class QuizManager : MonoBehaviour
         {
             FindAnswerScript();
         }
-
         PlantQuiz quiz = plantQuizzes.Find(q => q.plantName == plantName);
         if (quiz != null && quiz.quizTextAsset != null)
         {
@@ -79,7 +78,7 @@ public class QuizManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError($"Quiz for plant {plantName} not found or text asset is missing!");
+            Debug.LogError($"[QuizManager] Quiz for plant {plantName} not found or text asset is missing!");
         }
     }
 
@@ -87,8 +86,9 @@ public class QuizManager : MonoBehaviour
     {
         PlayerPrefs.SetInt("Plant_" + plantName, isUnlocked ? 1 : 0);
         PlayerPrefs.Save();
+        Debug.Log($"[QuizManager] Set unlock status for {plantName}: {isUnlocked}");
 
-        // 通知第一个场景中的 PlantDictionary 更新显示
+        // 通知主场景更新
         UpdatePlantDictionaryInMainScene(plantName);
     }
 
@@ -98,6 +98,7 @@ public class QuizManager : MonoBehaviour
         Scene mainScene = SceneManager.GetSceneAt(0);
         if (mainScene.isLoaded)
         {
+            Debug.Log("[QuizManager] Updating PlantDictionary in main scene");
             // 在主场景中查找 PlantDictionary
             GameObject[] rootObjects = mainScene.GetRootGameObjects();
             foreach (var rootObject in rootObjects)
@@ -105,7 +106,7 @@ public class QuizManager : MonoBehaviour
                 PlantDictionary dictionary = rootObject.GetComponentInChildren<PlantDictionary>();
                 if (dictionary != null)
                 {
-                    dictionary.UpdatePlantDisplay(plantName);
+                    dictionary.UnlockPlant(plantName);
                     break;
                 }
             }
